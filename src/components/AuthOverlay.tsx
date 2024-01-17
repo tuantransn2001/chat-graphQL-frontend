@@ -7,23 +7,27 @@ import {
   Paper,
   Text,
   TextInput,
-} from "@mantine/core"
-import React, { useState } from "react"
-import { useGeneralStore } from "../stores/generalStore"
-import { useForm } from "@mantine/form"
-import { useUserStore } from "../stores/userStore"
-import { GraphQLErrorExtensions } from "graphql"
-import { useMutation } from "@apollo/client"
-import { LoginUserMutation, RegisterUserMutation } from "../gql/graphql"
-import { REGISTER_USER } from "../graphql/mutations/Register"
-import { LOGIN_USER } from "../graphql/mutations/Login"
+} from "@mantine/core";
+import React, { useState } from "react";
+import {
+  isLoginModalOpenSelector,
+  toggleLoginModalSelector,
+  useGeneralStore,
+} from "../stores/generalStore";
+import { useForm } from "@mantine/form";
+import { setUserSelector, useUserStore } from "../stores/userStore";
+import { GraphQLErrorExtensions } from "graphql";
+import { useMutation } from "@apollo/client";
+import { LoginUserMutation, RegisterUserMutation } from "../gql/graphql";
+import { REGISTER_USER } from "../graphql/mutations/Register";
+import { LOGIN_USER } from "../graphql/mutations/Login";
 function AuthOverlay() {
-  const isLoginModalOpen = useGeneralStore((state) => state.isLoginModalOpen)
-  const toggleLoginModal = useGeneralStore((state) => state.toggleLoginModal)
-  const [isRegister, setIsRegister] = useState(true)
+  const isLoginModalOpen = useGeneralStore(isLoginModalOpenSelector);
+  const toggleLoginModal = useGeneralStore(toggleLoginModalSelector);
+  const [isRegister, setIsRegister] = useState(true);
   const toggleForm = () => {
-    setIsRegister(!isRegister)
-  }
+    setIsRegister(!isRegister);
+  };
 
   const Register = () => {
     const form = useForm({
@@ -49,17 +53,17 @@ function AuthOverlay() {
             ? null
             : "Passwords do not match",
       },
-    })
-    const setUser = useUserStore((state) => state.setUser)
-    const setIsLoginOpen = useGeneralStore((state) => state.toggleLoginModal)
+    });
+    const setUser = useUserStore(setUserSelector);
+    const setIsLoginOpen = useGeneralStore(toggleLoginModalSelector);
 
-    const [errors, setErrors] = React.useState<GraphQLErrorExtensions>({})
+    const [errors, setErrors] = React.useState<GraphQLErrorExtensions>({});
 
     const [registerUser, { loading }] =
-      useMutation<RegisterUserMutation>(REGISTER_USER)
+      useMutation<RegisterUserMutation>(REGISTER_USER);
 
     const handleRegister = async () => {
-      setErrors({})
+      setErrors({});
 
       await registerUser({
         variables: {
@@ -69,21 +73,21 @@ function AuthOverlay() {
           confirmPassword: form.values.confirmPassword,
         },
         onCompleted: (data) => {
-          setErrors({})
+          setErrors({});
           if (data?.register.user)
             setUser({
               id: data?.register.user.id,
               email: data?.register.user.email,
               fullname: data?.register.user.fullname,
-            })
-          setIsLoginOpen()
+            });
+          setIsLoginOpen();
         },
       }).catch((err) => {
-        console.log(err.graphQLErrors, "ERROR")
-        setErrors(err.graphQLErrors[0].extensions)
-        useGeneralStore.setState({ isLoginModalOpen: true })
-      })
-    }
+        console.log(err.graphQLErrors, "ERROR");
+        setErrors(err.graphQLErrors[0].extensions);
+        useGeneralStore.setState({ isLoginModalOpen: true });
+      });
+    };
 
     return (
       <Paper>
@@ -93,7 +97,7 @@ function AuthOverlay() {
 
         <form
           onSubmit={form.onSubmit(() => {
-            handleRegister()
+            handleRegister();
           })}
         >
           <Grid mt={20}>
@@ -161,16 +165,15 @@ function AuthOverlay() {
           </Group>
         </form>
       </Paper>
-    )
-  }
+    );
+  };
 
   const Login = () => {
-    const [loginUser, { loading, error, data }] =
-      useMutation<LoginUserMutation>(LOGIN_USER)
-    const setUser = useUserStore((state) => state.setUser)
-    const setIsLoginOpen = useGeneralStore((state) => state.toggleLoginModal)
-    const [errors, setErrors] = React.useState<GraphQLErrorExtensions>({})
-    const [invalidCredentials, setInvalidCredentials] = React.useState("")
+    const [loginUser, { loading }] = useMutation<LoginUserMutation>(LOGIN_USER);
+    const setUser = useUserStore(setUserSelector);
+    const setIsLoginOpen = useGeneralStore(toggleLoginModalSelector);
+    const [errors, setErrors] = React.useState<GraphQLErrorExtensions>({});
+    const [invalidCredentials, setInvalidCredentials] = React.useState("");
     const form = useForm({
       initialValues: {
         email: "",
@@ -184,7 +187,7 @@ function AuthOverlay() {
             ? null
             : "Password must be at least 3 characters",
       },
-    })
+    });
 
     const handleLogin = async () => {
       await loginUser({
@@ -193,26 +196,26 @@ function AuthOverlay() {
           password: form.values.password,
         },
         onCompleted: (data) => {
-          setErrors({})
+          setErrors({});
           if (data?.login.user) {
             setUser({
               id: data?.login.user.id,
               email: data?.login.user.email,
               fullname: data?.login.user.fullname,
               avatarUrl: data?.login.user.avatarUrl,
-            })
-            setIsLoginOpen()
+            });
+            setIsLoginOpen();
           }
         },
       }).catch((err) => {
-        setErrors(err.graphQLErrors[0].extensions)
+        setErrors(err.graphQLErrors[0].extensions);
         if (err.graphQLErrors[0].extensions?.invalidCredentials)
           setInvalidCredentials(
             err.graphQLErrors[0].extensions.invalidCredentials
-          )
-        useGeneralStore.setState({ isLoginModalOpen: true })
-      })
-    }
+          );
+        useGeneralStore.setState({ isLoginModalOpen: true });
+      });
+    };
     return (
       <Paper>
         <Text align="center" size="xl">
@@ -220,7 +223,7 @@ function AuthOverlay() {
         </Text>
         <form
           onSubmit={form.onSubmit(() => {
-            handleLogin()
+            handleLogin();
           })}
         >
           <Grid style={{ marginTop: 20 }}>
@@ -269,12 +272,12 @@ function AuthOverlay() {
           </Group>
         </form>
       </Paper>
-    )
-  }
+    );
+  };
   return (
     <Modal centered opened={isLoginModalOpen} onClose={toggleLoginModal}>
       {isRegister ? <Register /> : <Login />}
     </Modal>
-  )
+  );
 }
-export default AuthOverlay
+export default AuthOverlay;

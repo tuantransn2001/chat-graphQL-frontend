@@ -1,15 +1,15 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import { User } from "../gql/graphql"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { User } from "../gql/graphql";
 
 interface UserState {
-  id: number | undefined
-  avatarUrl: string | null
-  fullname: string
-  email?: string
-  updateProfileImage: (image: string) => void
-  updateUsername: (name: string) => void
-  setUser: (user: User) => void
+  id: number | undefined;
+  avatarUrl: string | null;
+  fullname: string;
+  email?: string;
+  updateProfileImage: (image: string) => void;
+  updateUsername: (name: string) => void;
+  setUser: (user: User) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -34,4 +34,13 @@ export const useUserStore = create<UserState>()(
       name: "user-store",
     }
   )
-)
+);
+export const userSelector = (state: UserState) => state;
+export const setUserSelector = (state: UserState) => state.setUser;
+export const userIdSelector = (state: UserState) => state.id;
+export const avatarUrlSelector = (state: UserState) => state.avatarUrl;
+export const updateProfileImageSelector = (state: UserState) =>
+  state.updateProfileImage;
+export const fullnameSelector = (state: UserState) => state.fullname;
+export const updateUsernameSelector = (state: UserState) =>
+  state.updateUsername;

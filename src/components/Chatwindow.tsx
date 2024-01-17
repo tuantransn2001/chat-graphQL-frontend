@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 
 import {
   TextInput,
   Image,
   Button,
-  Paper,
-  useMantineTheme,
   Flex,
   Avatar,
   Tooltip,
@@ -14,12 +12,12 @@ import {
   Card,
   Text,
   List,
-} from "@mantine/core"
-import { useDropzone } from "react-dropzone"
-import { useMutation, useQuery, useSubscription } from "@apollo/client"
-import { SEND_MESSAGE } from "../graphql/mutations/SendMessage"
-import { IconMichelinBibGourmand } from "@tabler/icons-react"
-import { useParams } from "react-router-dom"
+} from "@mantine/core";
+import { useDropzone } from "react-dropzone";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import { SEND_MESSAGE } from "../graphql/mutations/SendMessage";
+import { IconMichelinBibGourmand } from "@tabler/icons-react";
+import { useParams } from "react-router-dom";
 import {
   GetMessagesForChatroomQuery,
   GetUsersOfChatroomQuery,
@@ -30,41 +28,44 @@ import {
   User,
   UserStartedTypingSubscription,
   UserStoppedTypingSubscription,
-} from "../gql/graphql"
-import { GET_MESSAGES_FOR_CHATROOM } from "../graphql/queries/GetMessagesForChatroom"
-import { useUserStore } from "../stores/userStore"
+} from "../gql/graphql";
+import { GET_MESSAGES_FOR_CHATROOM } from "../graphql/queries/GetMessagesForChatroom";
+import {
+  useUserStore,
+  userIdSelector,
+  userSelector,
+} from "../stores/userStore";
 
-import { NEW_MESSAGE_SUBSCRIPTION } from "../graphql/subscriptions/NewMessage"
+import { NEW_MESSAGE_SUBSCRIPTION } from "../graphql/subscriptions/NewMessage";
 
-import OverlappingAvatars from "./OverlappingAvatars"
-import { USER_STARTED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStartedTyping"
-import { USER_STOPPED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStoppedTyping"
-import { LIVE_USERS_SUBSCRIPTION } from "../graphql/subscriptions/LiveUsers"
-import { ENTER_CHATROOM } from "../graphql/mutations/EnterChatroom"
-import { LEAVE_CHATROOM } from "../graphql/mutations/LeaveChatroom"
-import { GET_USERS_OF_CHATROOM } from "../graphql/queries/GetUsersOfChatroom"
-import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser"
-import { useMediaQuery } from "@mantine/hooks"
-import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation"
-import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation"
-import MessageBubble from "./MessageBubble"
+import OverlappingAvatars from "./OverlappingAvatars";
+import { USER_STARTED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStartedTyping";
+import { USER_STOPPED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStoppedTyping";
+import { LIVE_USERS_SUBSCRIPTION } from "../graphql/subscriptions/LiveUsers";
+import { ENTER_CHATROOM } from "../graphql/mutations/EnterChatroom";
+import { LEAVE_CHATROOM } from "../graphql/mutations/LeaveChatroom";
+import { GET_USERS_OF_CHATROOM } from "../graphql/queries/GetUsersOfChatroom";
+import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser";
+import { useMediaQuery } from "@mantine/hooks";
+import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation";
+import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation";
+import MessageBubble from "./MessageBubble";
 function Chatwindow() {
-  const [messageContent, setMessageContent] = useState("")
-  const [sendMessage] = useMutation<SendMessageMutation>(SEND_MESSAGE)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [messageContent, setMessageContent] = useState("");
+  const [sendMessage] = useMutation<SendMessageMutation>(SEND_MESSAGE);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0]
+      const file = acceptedFiles[0];
 
       if (file) {
-        setSelectedFile(file) // You are saving the binary file now
+        setSelectedFile(file); // You are saving the binary file now
       }
     },
-    //
-  })
-  const previewUrl = selectedFile ? URL.createObjectURL(selectedFile) : null
-  const { id } = useParams<{ id: string }>()
-  const user = useUserStore((state) => state)
+  });
+  const previewUrl = selectedFile ? URL.createObjectURL(selectedFile) : null;
+  const { id } = useParams<{ id: string }>();
+  const user = useUserStore(userSelector);
   const { data: typingData } = useSubscription<UserStartedTypingSubscription>(
     USER_STARTED_TYPING_SUBSCRIPTION,
     {
@@ -73,119 +74,119 @@ function Chatwindow() {
         userId: user.id,
       },
     }
-  )
+  );
   const { data: stoppedTypingData } =
     useSubscription<UserStoppedTypingSubscription>(
       USER_STOPPED_TYPING_SUBSCRIPTION,
       {
         variables: { chatroomId: parseInt(id!), userId: user.id },
       }
-    )
+    );
   const [userStartedTypingMutation] = useMutation(
     USER_STARTED_TYPING_MUTATION,
     {
       onCompleted: () => {
-        console.log("User started typing")
+        console.log("User started typing");
       },
       variables: { chatroomId: parseInt(id!) },
     }
-  )
+  );
   const [userStoppedTypingMutation] = useMutation(
     USER_STOPPED_TYPING_MUTATION,
     {
       onCompleted: () => {
-        console.log("User stopped typing")
+        console.log("User stopped typing");
       },
       variables: { chatroomId: parseInt(id!) },
     }
-  )
+  );
 
-  const [typingUsers, setTypingUsers] = useState<User[]>([])
+  const [typingUsers, setTypingUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    const user = typingData?.userStartedTyping
+    const user = typingData?.userStartedTyping;
     if (user && user.id) {
       setTypingUsers((prevUsers) => {
         if (!prevUsers.find((u) => u.id === user.id)) {
-          return [...prevUsers, user]
+          return [...prevUsers, user];
         }
-        return prevUsers
-      })
+        return prevUsers;
+      });
     }
-  }, [typingData])
+  }, [typingData]);
 
-  const typingTimeoutsRef = React.useRef<{ [key: number]: NodeJS.Timeout }>({})
+  const typingTimeoutsRef = React.useRef<{ [key: number]: NodeJS.Timeout }>({});
 
   useEffect(() => {
-    const user = stoppedTypingData?.userStoppedTyping
+    const user = stoppedTypingData?.userStoppedTyping;
     if (user && user.id) {
-      clearTimeout(typingTimeoutsRef.current[user.id])
-      setTypingUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id))
+      clearTimeout(typingTimeoutsRef.current[user.id]);
+      setTypingUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
     }
-  }, [stoppedTypingData])
+  }, [stoppedTypingData]);
 
-  const userId = useUserStore((state) => state.id)
+  const userId = useUserStore(userIdSelector);
 
   const handleUserStartedTyping = async () => {
-    await userStartedTypingMutation()
+    await userStartedTypingMutation();
 
     if (userId && typingTimeoutsRef.current[userId]) {
-      clearTimeout(typingTimeoutsRef.current[userId])
+      clearTimeout(typingTimeoutsRef.current[userId]);
     }
     if (userId) {
       typingTimeoutsRef.current[userId] = setTimeout(async () => {
         setTypingUsers((prevUsers) =>
           prevUsers.filter((user) => user.id !== userId)
-        )
-        await userStoppedTypingMutation()
-      }, 2000)
+        );
+        await userStoppedTypingMutation();
+      }, 2000);
     }
-  }
+  };
 
   const { data: liveUsersData, loading: liveUsersLoading } =
     useSubscription<LiveUsersInChatroomSubscription>(LIVE_USERS_SUBSCRIPTION, {
       variables: {
         chatroomId: parseInt(id!),
       },
-    })
+    });
 
-  const [liveUsers, setLiveUsers] = useState<User[]>([])
+  const setLiveUsers = useState<User[]>([])[1];
 
   useEffect(() => {
     if (liveUsersData?.liveUsersInChatroom) {
-      setLiveUsers(liveUsersData.liveUsersInChatroom)
+      setLiveUsers(liveUsersData.liveUsersInChatroom);
     }
-  }, [liveUsersData?.liveUsersInChatroom])
-  const [enterChatroom] = useMutation(ENTER_CHATROOM)
-  const [leaveChatroom] = useMutation(LEAVE_CHATROOM)
-  const chatroomId = parseInt(id!)
+  }, [liveUsersData?.liveUsersInChatroom]);
+  const [enterChatroom] = useMutation(ENTER_CHATROOM);
+  const [leaveChatroom] = useMutation(LEAVE_CHATROOM);
+  const chatroomId = parseInt(id!);
 
   const handleEnter = async () => {
     await enterChatroom({ variables: { chatroomId } })
       .then((response) => {
         if (response.data.enterChatroom) {
-          console.log("Successfully entered chatroom!")
+          console.log("Successfully entered chatroom!");
         }
       })
       .catch((error) => {
-        console.error("Error entering chatroom:", error)
-      })
-  }
+        console.error("Error entering chatroom:", error);
+      });
+  };
 
   const handleLeave = async () => {
     await leaveChatroom({ variables: { chatroomId } })
       .then((response) => {
         if (response.data.leaveChatroom) {
-          console.log("Successfully left chatroom!")
+          console.log("Successfully left chatroom!");
         }
       })
       .catch((error) => {
-        console.error("Error leaving chatroom:", error)
-      })
-  }
+        console.error("Error leaving chatroom:", error);
+      });
+  };
 
   const [isUserPartOfChatroom, setIsUserPartOfChatroom] =
-    useState<() => boolean | undefined>()
+    useState<() => boolean | undefined>();
 
   const { data: dataUsersOfChatroom } = useQuery<GetUsersOfChatroomQuery>(
     GET_USERS_OF_CHATROOM,
@@ -194,45 +195,45 @@ function Chatwindow() {
         chatroomId: chatroomId,
       },
     }
-  )
+  );
 
   useEffect(() => {
     setIsUserPartOfChatroom(() =>
       dataUsersOfChatroom?.getUsersOfChatroom.some((user) => user.id === userId)
-    )
-  }, [dataUsersOfChatroom?.getUsersOfChatroom, userId])
+    );
+  }, [dataUsersOfChatroom?.getUsersOfChatroom, userId]);
 
   useEffect(() => {
-    handleEnter()
+    handleEnter();
     if (liveUsersData?.liveUsersInChatroom) {
-      setLiveUsers(liveUsersData.liveUsersInChatroom)
+      setLiveUsers(liveUsersData.liveUsersInChatroom);
       setIsUserPartOfChatroom(() =>
         dataUsersOfChatroom?.getUsersOfChatroom.some(
           (user) => user.id === userId
         )
-      )
+      );
     }
-  }, [chatroomId])
+  }, [chatroomId]);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", handleLeave)
+    window.addEventListener("beforeunload", handleLeave);
     return () => {
-      window.removeEventListener("beforeunload", handleLeave)
-    }
-  }, [])
+      window.removeEventListener("beforeunload", handleLeave);
+    };
+  }, []);
 
   useEffect(() => {
-    handleEnter()
+    handleEnter();
     if (liveUsersData?.liveUsersInChatroom) {
-      setLiveUsers(liveUsersData.liveUsersInChatroom)
+      setLiveUsers(liveUsersData.liveUsersInChatroom);
     }
 
     return () => {
-      handleLeave()
-    }
-  }, [chatroomId])
+      handleLeave();
+    };
+  }, [chatroomId]);
 
-  const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
+  const scrollAreaRef = React.useRef<HTMLDivElement | null>(null);
 
   const { data, loading } = useQuery<GetMessagesForChatroomQuery>(
     GET_MESSAGES_FOR_CHATROOM,
@@ -241,14 +242,14 @@ function Chatwindow() {
         chatroomId: chatroomId,
       },
     }
-  )
+  );
 
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
     if (data?.getMessagesForChatroom) {
-      setMessages(data.getMessagesForChatroom)
+      setMessages(data.getMessagesForChatroom);
     }
-  }, [data?.getMessagesForChatroom])
+  }, [data?.getMessagesForChatroom]);
 
   const handleSendMessage = async () => {
     await sendMessage({
@@ -265,47 +266,47 @@ function Chatwindow() {
           },
         },
       ],
-    })
-    setMessageContent("")
-    setSelectedFile(null)
-  }
+    });
+    setMessageContent("");
+    setSelectedFile(null);
+  };
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
-      console.log("Scrolling to bottom")
-      const scrollElement = scrollAreaRef.current
-      console.log(scrollElement.scrollHeight, scrollElement.clientHeight)
+      console.log("Scrolling to bottom");
+      const scrollElement = scrollAreaRef.current;
+      console.log(scrollElement.scrollHeight, scrollElement.clientHeight);
       scrollElement.scrollTo({
         top: scrollElement.scrollHeight,
         behavior: "smooth",
-      })
+      });
     }
-  }
+  };
   useEffect(() => {
     if (data?.getMessagesForChatroom) {
       const uniqueMessages = Array.from(
         new Set(data.getMessagesForChatroom.map((m) => m.id))
-      ).map((id) => data.getMessagesForChatroom.find((m) => m.id === id))
-      setMessages(uniqueMessages as Message[])
-      scrollToBottom()
+      ).map((id) => data.getMessagesForChatroom.find((m) => m.id === id));
+      setMessages(uniqueMessages as Message[]);
+      scrollToBottom();
     }
-  }, [data?.getMessagesForChatroom])
+  }, [data?.getMessagesForChatroom]);
 
   const { data: dataSub } = useSubscription<NewMessageSubscription>(
     NEW_MESSAGE_SUBSCRIPTION,
     {
       variables: { chatroomId },
     }
-  )
+  );
 
   useEffect(() => {
-    scrollToBottom()
+    scrollToBottom();
     if (dataSub?.newMessage) {
       if (!messages.find((m) => m.id === dataSub.newMessage?.id)) {
-        setMessages((prevMessages) => [...prevMessages, dataSub.newMessage!])
+        setMessages((prevMessages) => [...prevMessages, dataSub.newMessage!]);
       }
     }
-  }, [dataSub?.newMessage, messages])
-  const isMediumDevice = useMediaQuery("(max-width: 992px)")
+  }, [dataSub?.newMessage, messages]);
+  const isMediumDevice = useMediaQuery("(max-width: 992px)");
   return (
     <Flex
       maw={isMediumDevice ? "calc(100vw - 100px)" : "calc(100vw - 550px)"}
@@ -394,7 +395,7 @@ function Chatwindow() {
                       message={message}
                       currentUserId={userId || 0}
                     />
-                  )
+                  );
                 })
               )}
             </ScrollArea>
@@ -497,7 +498,7 @@ function Chatwindow() {
         <></>
       )}
     </Flex>
-  )
+  );
 }
 
-export default Chatwindow
+export default Chatwindow;

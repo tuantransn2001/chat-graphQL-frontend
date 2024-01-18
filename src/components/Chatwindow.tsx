@@ -367,7 +367,7 @@ function Chatwindow() {
                           bg="green"
                           style={{ borderRadius: 10 }}
                         ></Flex>
-                        <Text ml={"sm"}>{user.fullname}</Text>
+                        {/* <Text ml={"sm"}>{user.fullname}</Text> */}
                       </Flex>
                     ))}
                   </List>

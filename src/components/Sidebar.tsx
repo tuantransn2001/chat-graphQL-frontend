@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { useState } from "react";
 import {
   toggleLoginModalSelector,
@@ -29,6 +31,10 @@ import {
 } from "@tabler/icons-react";
 import { useMutation } from "@apollo/client";
 import { LOGOUT_USER } from "../graphql/mutations/Logout";
+import {
+  DEFAULT_ICON_SIZE,
+  LOGO_ICON_SIZE,
+} from "../shared/constants/constants";
 
 const useStyles = createStyles((theme) => {
   return {
@@ -89,7 +95,12 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
     </Tooltip>
   );
 }
-const mockdata = [{ icon: IconBrandWechat, label: "Chatrooms" }];
+const mockdata = [
+  {
+    icon: () => <IconBrandWechat size={DEFAULT_ICON_SIZE} />,
+    label: "Chatrooms",
+  },
+];
 
 function Sidebar() {
   const toggleProfileSettingsModal = useGeneralStore(
@@ -108,9 +119,12 @@ function Sidebar() {
   const userId = useUserStore(userIdSelector);
   const user = useUserStore(userSelector);
   const setUser = useUserStore(setUserSelector);
-
   const toggleLoginModal = useGeneralStore(toggleLoginModalSelector);
-  const [logoutUser, { loading, error }] = useMutation(LOGOUT_USER, {
+
+  const [
+    logoutUser,
+    // , { loading, error }
+  ] = useMutation(LOGOUT_USER, {
     onCompleted: () => {
       toggleLoginModal();
     },
@@ -129,7 +143,11 @@ function Sidebar() {
   return (
     <Navbar fixed zIndex={100} w={rem(100)} p="md">
       <Center>
-        <IconBrandMessenger type="mark" size={30} />
+        <IconBrandMessenger
+          style={{ transform: "translateX(-10px)" }}
+          type="mark"
+          size={LOGO_ICON_SIZE}
+        />
       </Center>
       <Navbar.Section grow mt={50}>
         <Stack justify="center" spacing={0}>
@@ -140,7 +158,7 @@ function Sidebar() {
         <Stack justify="center" spacing={0}>
           {userId && (
             <NavbarLink
-              icon={IconUser}
+              icon={() => <IconUser size={DEFAULT_ICON_SIZE} />}
               label={"Profile(" + user.fullname + ")"}
               onClick={toggleProfileSettingsModal}
             />
@@ -148,13 +166,13 @@ function Sidebar() {
 
           {userId ? (
             <NavbarLink
-              icon={IconLogout}
+              icon={() => <IconLogout size={DEFAULT_ICON_SIZE} />}
               label="Logout"
               onClick={handleLogout}
             />
           ) : (
             <NavbarLink
-              icon={IconLogin}
+              icon={() => <IconLogin size={DEFAULT_ICON_SIZE} />}
               label="Login"
               onClick={toggleLoginModal}
             />

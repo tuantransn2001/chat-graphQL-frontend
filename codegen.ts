@@ -1,4 +1,4 @@
-import { CodegenConfig } from "@graphql-codegen/cli"
+import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   schema: "http://localhost:3000/graphql",
@@ -10,6 +10,6 @@ const config: CodegenConfig = {
       plugins: ["typescript"],
     },
   },
-}
+};
 
-export default config
+export default config;

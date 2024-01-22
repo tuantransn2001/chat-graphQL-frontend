@@ -41,7 +41,8 @@ let retryCount = 0;
 const maxRetry = 3;
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:3000/graphql`,
+  uri:
+    "ws://chat-app-bpka.onrender.com/graphql" || `ws://localhost:3000/graphql`,
   options: {
     reconnect: true,
     connectionParams: {
@@ -57,7 +58,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         return new Observable((observer) => {
           refreshToken(client)
             .then((token) => {
-              console.log("token", token);
               operation.setContext(
                 (previousContext: Record<string, unknown>) => ({
                   headers: {
@@ -86,7 +86,9 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
 });
 
 const uploadLink = createUploadLink({
-  uri: "http://localhost:3000/graphql",
+  uri:
+    "https://chat-app-bpka.onrender.com/graphql" ||
+    "http://localhost:3000/graphql",
   credentials: "include",
   headers: {
     "apollo-require-preflight": "true",
@@ -105,7 +107,9 @@ const link = split(
   ApolloLink.from([errorLink, uploadLink])
 );
 export const client = new ApolloClient({
-  uri: "http://localhost:3000/graphql",
+  uri:
+    "https://chat-app-bpka.onrender.com/graphql" ||
+    "http://localhost:3000/graphql",
   cache: new InMemoryCache({}),
   credentials: "include",
   headers: {

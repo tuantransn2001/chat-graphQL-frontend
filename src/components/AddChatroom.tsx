@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import {
   Stepper,
@@ -18,7 +19,6 @@ import {
   Chatroom,
   CreateChatroomMutation,
   SearchUsersQuery,
-  User,
 } from "../gql/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { useForm } from "@mantine/form";
@@ -28,7 +28,7 @@ import { ADD_USERS_TO_CHATROOM } from "../graphql/mutations/AddUsersToChatroom";
 
 function AddChatroom() {
   const [active, setActive] = useState(1);
-  const [highestStepVisited, setHighestStepVisited] = useState(active);
+  const [_, setHighestStepVisited] = useState(active);
 
   const isCreateRoomModalOpen = useGeneralStore(isCreateRoomModalOpenSelector);
   const toggleCreateRoomModal = useGeneralStore(toggleCreateRoomModalSelector);
@@ -81,10 +81,12 @@ function AddChatroom() {
   const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USERS, {
     variables: { fullname: searchTerm },
   });
-  const [addUsersToChatroom, { loading: loadingAddUsers }] =
-    useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
+  const [addUsersToChatroom] = useMutation<AddUsersToChatroomMutation>(
+    ADD_USERS_TO_CHATROOM,
+    {
       refetchQueries: ["GetChatroomsForUser"],
-    });
+    }
+  );
 
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const handleAddUsersToChatroom = async () => {

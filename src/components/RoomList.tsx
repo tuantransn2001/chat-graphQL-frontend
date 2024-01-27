@@ -1,5 +1,5 @@
 import React from "react";
-
+import moment from "moment";
 import {
   Button,
   Card,
@@ -34,6 +34,7 @@ function RoomList() {
       },
     }
   );
+
   const isSmallDevice = useMediaQuery("(max-width: 768px)");
   const defaultTextStyles: React.CSSProperties = {
     textOverflow: isSmallDevice ? "unset" : "ellipsis",
@@ -138,9 +139,7 @@ function RoomList() {
                               {chatroom.messages[0].content}
                             </Text>
                             <Text c="dimmed" style={defaultTextStyles}>
-                              {new Date(
-                                chatroom.messages[0].createdAt
-                              ).toLocaleString()}
+                              {moment(chatroom.messages[0].createdAt).fromNow()}
                             </Text>
                           </Flex>
                         </Flex>

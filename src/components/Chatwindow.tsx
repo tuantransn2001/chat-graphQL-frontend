@@ -156,7 +156,7 @@ function Chatwindow() {
     if (liveUsersData?.liveUsersInChatroom) {
       setLiveUsers(liveUsersData.liveUsersInChatroom);
     }
-  }, [liveUsersData?.liveUsersInChatroom]);
+  }, [liveUsersData?.liveUsersInChatroom, setLiveUsers]);
   const [enterChatroom] = useMutation(ENTER_CHATROOM);
   const [leaveChatroom] = useMutation(LEAVE_CHATROOM);
   const chatroomId = parseInt(id!);

@@ -1,5 +1,5 @@
 import React from "react";
-
+import moment from "moment";
 import {
   Button,
   Card,
@@ -26,7 +26,7 @@ function RoomList() {
   const toggleCreateRoomModal = useGeneralStore(toggleCreateRoomModalSelector);
   const userId = useUserStore(userIdSelector);
 
-  const { data, loading } = useQuery<GetChatroomsForUserQuery>(
+  const { loading } = useQuery<GetChatroomsForUserQuery>(
     GET_CHATROOMS_FOR_USER,
     {
       variables: {
@@ -34,6 +34,42 @@ function RoomList() {
       },
     }
   );
+
+  const data = {
+    getChatroomsForUser: [
+      {
+        __typename: "Chatroom",
+        id: "6",
+        name: "Hello",
+        messages: [
+          {
+            __typename: "Message",
+            id: "6",
+            content: "helo",
+            createdAt: "2024-01-27T09:30:45.378Z",
+            user: null,
+          },
+        ],
+        users: [
+          {
+            __typename: "User",
+            avatarUrl: null,
+            id: 2,
+            fullname: "Tran Thai Tuan",
+            email: "tuantransn2000@gmail.com",
+          },
+          {
+            __typename: "User",
+            avatarUrl: null,
+            id: 1,
+            fullname: "Tran Thai Tuan",
+            email: "tuantransn2001@gmail.com",
+          },
+        ],
+      },
+    ],
+  };
+
   const isSmallDevice = useMediaQuery("(max-width: 768px)");
   const defaultTextStyles: React.CSSProperties = {
     textOverflow: isSmallDevice ? "unset" : "ellipsis",
@@ -138,9 +174,7 @@ function RoomList() {
                               {chatroom.messages[0].content}
                             </Text>
                             <Text c="dimmed" style={defaultTextStyles}>
-                              {new Date(
-                                chatroom.messages[0].createdAt
-                              ).toLocaleString()}
+                              {moment(chatroom.messages[0].createdAt).fromNow()}
                             </Text>
                           </Flex>
                         </Flex>

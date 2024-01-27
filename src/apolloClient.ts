@@ -15,6 +15,7 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { useUserStore } from "./stores/userStore";
 import { onError } from "@apollo/client/link/error";
+import { HTTP_BASE_URL, WS_BASE_URL } from "./common/common";
 
 loadErrorMessages();
 loadDevMessages();
@@ -41,7 +42,7 @@ let retryCount = 0;
 const maxRetry = 3;
 
 const wsLink = new WebSocketLink({
-  uri: "wss://chat-app-bpka.onrender.com/graphql",
+  uri: WS_BASE_URL,
   options: {
     reconnect: true,
     connectionParams: {
@@ -85,7 +86,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
 });
 
 const uploadLink = createUploadLink({
-  uri: "https://chat-app-bpka.onrender.com/graphql",
+  uri: HTTP_BASE_URL,
   credentials: "include",
   headers: {
     "apollo-require-preflight": "true",
@@ -104,7 +105,7 @@ const link = split(
   ApolloLink.from([errorLink, uploadLink])
 );
 export const client = new ApolloClient({
-  uri: "https://chat-app-bpka.onrender.com/graphql",
+  uri: HTTP_BASE_URL,
   cache: new InMemoryCache({}),
   credentials: "include",
   headers: {

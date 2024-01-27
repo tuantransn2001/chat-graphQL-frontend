@@ -26,7 +26,7 @@ function RoomList() {
   const toggleCreateRoomModal = useGeneralStore(toggleCreateRoomModalSelector);
   const userId = useUserStore(userIdSelector);
 
-  const { loading } = useQuery<GetChatroomsForUserQuery>(
+  const { data, loading } = useQuery<GetChatroomsForUserQuery>(
     GET_CHATROOMS_FOR_USER,
     {
       variables: {
@@ -34,41 +34,6 @@ function RoomList() {
       },
     }
   );
-
-  const data = {
-    getChatroomsForUser: [
-      {
-        __typename: "Chatroom",
-        id: "6",
-        name: "Hello",
-        messages: [
-          {
-            __typename: "Message",
-            id: "6",
-            content: "helo",
-            createdAt: "2024-01-27T09:30:45.378Z",
-            user: null,
-          },
-        ],
-        users: [
-          {
-            __typename: "User",
-            avatarUrl: null,
-            id: 2,
-            fullname: "Tran Thai Tuan",
-            email: "tuantransn2000@gmail.com",
-          },
-          {
-            __typename: "User",
-            avatarUrl: null,
-            id: 1,
-            fullname: "Tran Thai Tuan",
-            email: "tuantransn2001@gmail.com",
-          },
-        ],
-      },
-    ],
-  };
 
   const isSmallDevice = useMediaQuery("(max-width: 768px)");
   const defaultTextStyles: React.CSSProperties = {

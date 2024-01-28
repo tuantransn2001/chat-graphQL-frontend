@@ -1,21 +1,20 @@
 import React from "react";
 import { Message } from "../gql/graphql";
-import {
-  Avatar,
-  Flex,
-  Image,
-  Paper,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
+import { Avatar, Flex, Image, Paper, useMantineTheme } from "@mantine/core";
 
 interface MessageProps {
   message: Message;
   currentUserId: number;
+  showAvatar: boolean;
 }
 
-const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
+const MessageBubble: React.FC<MessageProps> = ({
+  message,
+  currentUserId,
+  showAvatar,
+}) => {
   const theme = useMantineTheme();
+
   if (!message?.user?.id) return null;
   const isSentByCurrentUser = message.user.id === currentUserId;
 
@@ -26,7 +25,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
       m={"md"}
       mb={10}
     >
-      {!isSentByCurrentUser && (
+      {!isSentByCurrentUser && showAvatar && (
         <Avatar
           radius={"xl"}
           src={message.user.avatarUrl || null}
@@ -34,13 +33,10 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
         />
       )}
       <Flex direction={"column"} justify={"center"} align={"center"}>
-        {isSentByCurrentUser ? (
-          <span>Me</span>
-        ) : (
-          <span>{message.user.fullname}</span>
-        )}
+        {!isSentByCurrentUser && <span>{message.user.fullname}</span>}
         <Paper
-          p="md"
+          px="md"
+          py="xs"
           style={{
             marginLeft: isSentByCurrentUser ? 0 : 10,
             marginRight: isSentByCurrentUser ? 10 : 0,
@@ -62,13 +58,13 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
             />
           )}
 
-          <Text
+          {/* <Text
             style={
               isSentByCurrentUser ? { color: "#e0e0e4" } : { color: "gray" }
             }
           >
             {new Date(message.createdAt).toLocaleString()}
-          </Text>
+          </Text> */}
         </Paper>
       </Flex>
       {isSentByCurrentUser && (

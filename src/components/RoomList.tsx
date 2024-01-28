@@ -112,44 +112,58 @@ function RoomList() {
                         ? { backgroundColor: "#f0f1f1" }
                         : undefined
                     }
-                    mih={120}
-                    py={"md"}
+                    py={"lg"}
                     withBorder
                     shadow="md"
                   >
-                    <Flex justify={"space-around"}>
-                      {chatroom.users && (
-                        <Flex align={"center"}>
-                          <OverlappingAvatars users={chatroom.users} />
-                        </Flex>
-                      )}
-                      {chatroom.messages && chatroom.messages.length > 0 ? (
-                        <Flex
-                          style={defaultFlexStyles}
-                          direction={"column"}
-                          align={"start"}
-                          w={"100%"}
-                          h="100%"
-                        >
-                          <Flex direction={"column"}>
-                            <Text size="lg" style={defaultTextStyles}>
-                              {chatroom.name}
-                            </Text>
-                            <Text style={defaultTextStyles}>
-                              {chatroom.messages[0].content}
-                            </Text>
-                            <Text c="dimmed" style={defaultTextStyles}>
-                              {moment(chatroom.messages[0].createdAt).fromNow()}
+                    <Flex align="center" justify={"space-between"}>
+                      <Flex align="center" gap={"sm"}>
+                        {chatroom.users && (
+                          <Flex align={"center"}>
+                            <OverlappingAvatars users={chatroom.users} />
+                          </Flex>
+                        )}
+
+                        {chatroom.messages && chatroom.messages.length > 0 ? (
+                          <Flex
+                            style={defaultFlexStyles}
+                            direction={"column"}
+                            align={"start"}
+                            w={"100%"}
+                            h="100%"
+                          >
+                            <Flex direction={"column"}>
+                              <Text
+                                size="md"
+                                fw={600}
+                                variant="gradient"
+                                gradient={{ from: "blue", to: "cyan", deg: 90 }}
+                                style={defaultTextStyles}
+                              >
+                                {chatroom.name}
+                              </Text>
+                              <Text style={defaultTextStyles} color="#7D7C7C">
+                                {chatroom.messages[0].content}
+                              </Text>
+                              <Text
+                                c="dimmed"
+                                size={"xs"}
+                                style={defaultTextStyles}
+                              >
+                                {moment(
+                                  chatroom.messages[0].createdAt
+                                ).fromNow()}
+                              </Text>
+                            </Flex>
+                          </Flex>
+                        ) : (
+                          <Flex align="center" justify={"center"}>
+                            <Text italic c="dimmed">
+                              No Messages
                             </Text>
                           </Flex>
-                        </Flex>
-                      ) : (
-                        <Flex align="center" justify={"center"}>
-                          <Text italic c="dimmed">
-                            No Messages
-                          </Text>
-                        </Flex>
-                      )}
+                        )}
+                      </Flex>
                       {chatroom?.users && chatroom.users[0].id === userId && (
                         <Flex h="100%" align="end" justify={"end"}>
                           <Button

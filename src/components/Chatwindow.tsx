@@ -16,7 +16,7 @@ import {
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import { SEND_MESSAGE } from "../graphql/mutations/SendMessage";
-import { IconMichelinBibGourmand } from "@tabler/icons-react";
+import { IconPhoto, IconSend } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 import {
   GetMessagesForChatroomQuery,
@@ -49,7 +49,8 @@ import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser";
 import { useMediaQuery } from "@mantine/hooks";
 import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation";
 import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation";
-import MessageBubble from "./MessageBubble";
+import GroupMessageByDate from "./GroupMessageByDate";
+
 function Chatwindow() {
   const [messageContent, setMessageContent] = useState("");
   const [sendMessage] = useMutation<SendMessageMutation>(SEND_MESSAGE);
@@ -157,6 +158,7 @@ function Chatwindow() {
       setLiveUsers(liveUsersData.liveUsersInChatroom);
     }
   }, [liveUsersData?.liveUsersInChatroom, setLiveUsers]);
+
   const [enterChatroom] = useMutation(ENTER_CHATROOM);
   const [leaveChatroom] = useMutation(LEAVE_CHATROOM);
   const chatroomId = parseInt(id!);
@@ -250,7 +252,6 @@ function Chatwindow() {
       setMessages(data.getMessagesForChatroom);
     }
   }, [data?.getMessagesForChatroom]);
-
   const handleSendMessage = async () => {
     await sendMessage({
       variables: {
@@ -367,7 +368,6 @@ function Chatwindow() {
                           bg="green"
                           style={{ borderRadius: 10 }}
                         ></Flex>
-                        {/* <Text ml={"sm"}>{user.fullname}</Text> */}
                       </Flex>
                     ))}
                   </List>
@@ -388,15 +388,7 @@ function Chatwindow() {
                   Loading...
                 </Text>
               ) : (
-                messages.map((message) => {
-                  return (
-                    <MessageBubble
-                      key={message?.id}
-                      message={message}
-                      currentUserId={userId || 0}
-                    />
-                  );
-                })
+                <GroupMessageByDate messages={messages} />
               )}
             </ScrollArea>
 
@@ -470,7 +462,9 @@ function Chatwindow() {
                         radius={"md"}
                       />
                     )}
-                    <Button leftIcon={<IconMichelinBibGourmand />}></Button>
+                    <Button>
+                      <IconPhoto />
+                    </Button>
                     <input {...getInputProps()} />
                   </Flex>
                   <TextInput
@@ -483,7 +477,7 @@ function Chatwindow() {
                       <Button
                         onClick={handleSendMessage}
                         color="blue"
-                        leftIcon={<IconMichelinBibGourmand />}
+                        leftIcon={<IconSend />}
                       >
                         Send
                       </Button>

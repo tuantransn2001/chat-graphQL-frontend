@@ -27,12 +27,12 @@ This is an open-source alternative communication platform Web (React) version so
 
 ## INSTALLATION (Web)
 
-````
-
 Make sure to change all the sensitive values in your YAML file before building your server.
 
-```yaml
-   yarn dev
+````
+ yarn
+ yarn dev
+  
 ````
 
 ## LICENSE
